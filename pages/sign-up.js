@@ -1,4 +1,5 @@
 import Link from "next/link"
+import ErrorMessage, { getMinLengthErrorText } from "../components/ErrorMessage"
 
 import React, { useState } from "react"
 
@@ -7,38 +8,36 @@ export default function SignUp() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
-  const userameIsInvalid = username.length < 2
+  const [usernameBlurred, setUsernameBlurred] = useState(false)
+  const [emailBlurred, setEmailBlurred] = useState(false)
+  const [passwordBlurred, setPasswordBlurred] = useState(false)
+
+  const usernameIsInvalid = username.length < 2
   const emailIsInvalid = !emailRegex.test(email)
   const passwordIsInvalid = password.length < 6
-
-  function ErrorMessage({ text }) {
-    return (
-      <span style={{ color: "red" }} role="alert">
-        {text}
-      </span>
-    )
-  }
 
   return (
     <>
       <form style={{ display: "flex", flexDirection: "column" }} noValidate>
         <label style={{ display: "flex", flexDirection: "column" }}>
           Имя
-          <input type="text" onChange={e => setUsername(e.target.value)} />
-          {userameIsInvalid && (
-            <ErrorMessage
-              text={`
-                    Пожалуйста, используйте не менее 2 символов (сейчас вы
-                    используете ${username.length}
-                    символов).
-                  `}
-            />
+          <input
+            type="text"
+            onChange={e => setUsername(e.target.value)}
+            onBlur={() => setUsernameBlurred(true)}
+          />
+          {usernameBlurred && usernameIsInvalid && (
+            <ErrorMessage text={getMinLengthErrorText(2, username.length)} />
           )}
         </label>
         <label style={{ display: "flex", flexDirection: "column" }}>
           E-mail
-          <input type="email" onChange={e => setEmail(e.target.value)} />
-          {emailIsInvalid && (
+          <input
+            type="email"
+            onChange={e => setEmail(e.target.value)}
+            onBlur={() => setEmailBlurred(true)}
+          />
+          {emailBlurred && emailIsInvalid && (
             <ErrorMessage
               text={"Пожалуйста, введите адрес электронной почты."}
             />
@@ -46,19 +45,19 @@ export default function SignUp() {
         </label>
         <label style={{ display: "flex", flexDirection: "column" }}>
           Пароль
-          <input type="password" onChange={e => setPassword(e.target.value)} />
-          {passwordIsInvalid && (
-            <ErrorMessage
-              text={`Пожалуйста, используйте не менее 6 символов (сейчас вы используете
-              ${password.length}
-              символов).`}
-            />
+          <input
+            type="password"
+            onChange={e => setPassword(e.target.value)}
+            onBlur={() => setPasswordBlurred(true)}
+          />
+          {passwordBlurred && passwordIsInvalid && (
+            <ErrorMessage text={getMinLengthErrorText(6, password.length)} />
           )}
         </label>
         <button
           style={{ maxWidth: 260 }}
           type="submit"
-          disabled={userameIsInvalid || passwordIsInvalid || emailIsInvalid}
+          disabled={usernameIsInvalid || passwordIsInvalid || emailIsInvalid}
         >
           Зарегистрироваться
         </button>
