@@ -2,6 +2,9 @@
   "name": "nextjs-movies",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "seed": "node prisma/seed.mjs"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,7 +12,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@prisma/client": "^4.2.0",
+    "bcryptjs": "^2.4.3",
     "next": "12.2.3",
+    "prisma": "^4.2.0",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
