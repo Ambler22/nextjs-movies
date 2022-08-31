@@ -1,7 +1,19 @@
+import Router, { useRouter } from "next/router"
 import React, { useState } from "react"
 import ErrorMessage, { getMinLengthErrorText } from "../components/ErrorMessage"
 
-export default function SignIn() {
+{
+  /* <App>
+  <SignIn setUser={setUser}>
+  </SignIn>
+</App> */
+}
+
+// setUser(user)
+
+export default function SignIn({ setUser }) {
+  const router = useRouter()
+
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
 
@@ -11,8 +23,29 @@ export default function SignIn() {
   const usernameIsInvalid = username.length < 1
   const passwordIsInvalid = password.length < 1
 
+  async function handleSubmit(event) {
+    event.preventDefault()
+    const response = await fetch("api/sign-in", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({ username, password }),
+    })
+    // .then(res => res.json())
+    // .then(user => console.log(user))
+    const user = await response.json()
+    console.log(user)
+    setUser(user)
+    router.push("/movies")
+  }
+
   return (
-    <form style={{ display: "flex", flexDirection: "column" }} noValidate>
+    <form
+      style={{ display: "flex", flexDirection: "column" }}
+      noValidate
+      onSubmit={handleSubmit}
+    >
       <label>
         Введите Имя или E-mail
         <input

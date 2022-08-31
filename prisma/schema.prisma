@@ -23,3 +23,15 @@ model User {
   username String @unique
   password String
 }
+
+model Movie {
+  id Int @id 
+  nameRU String 
+  duration Int
+  country String?
+  description String
+  director String? 
+  year String
+  trailerLink String?
+  imageUrl String
+}

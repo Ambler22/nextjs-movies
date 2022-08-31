@@ -19,7 +19,7 @@
   },
   "prettier.semi": false,
   "prettier.arrowParens": "avoid",
-  "js/ts.implicitProjectConfig.checkJs": false,
+  //  "js/ts.implicitProjectConfig.checkJs": true,
   "editor.inlayHints.enabled": true,
   "editor.inlayHints.padding": true,
   "javascript.inlayHints.parameterNames.enabled": "literals",

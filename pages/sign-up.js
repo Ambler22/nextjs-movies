@@ -2,8 +2,10 @@ import Link from "next/link"
 import ErrorMessage, { getMinLengthErrorText } from "../components/ErrorMessage"
 
 import React, { useState } from "react"
+import Router, { useRouter } from "next/router"
 
 export default function SignUp() {
+  const router = useRouter()
   const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -16,9 +18,33 @@ export default function SignUp() {
   const emailIsInvalid = !emailRegex.test(email)
   const passwordIsInvalid = password.length < 6
 
+  async function handleSubmit(event) {
+    event.preventDefault()
+    const response = await fetch("api/sign-up", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username,
+        email,
+        password,
+      }),
+    })
+    if (response.ok) {
+      router.push("/sign-in")
+    } else {
+      // handle api validation errors...
+    }
+  }
+
   return (
     <>
-      <form style={{ display: "flex", flexDirection: "column" }} noValidate>
+      <form
+        style={{ display: "flex", flexDirection: "column" }}
+        noValidate
+        onSubmit={handleSubmit}
+      >
         <label style={{ display: "flex", flexDirection: "column" }}>
           Имя
           <input
