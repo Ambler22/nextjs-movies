@@ -2,7 +2,7 @@ import Link from "next/link"
 import ErrorMessage, { getMinLengthErrorText } from "../components/ErrorMessage"
 
 import React, { useState } from "react"
-import Router, { useRouter } from "next/router"
+import { useRouter } from "next/router"
 
 export default function SignUp() {
   const router = useRouter()

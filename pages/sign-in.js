@@ -1,6 +1,6 @@
-import Router, { useRouter } from "next/router"
+import { useRouter } from "next/router"
 import React, { useState } from "react"
-import ErrorMessage, { getMinLengthErrorText } from "../components/ErrorMessage"
+import ErrorMessage from "../components/ErrorMessage"
 
 {
   /* <App>

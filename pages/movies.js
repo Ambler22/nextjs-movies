@@ -6,31 +6,75 @@ import { TOKEN_COOKIE_NAME } from "../utils/auth"
 
 // [[{ name: 'django' }], true, () => { fetch() }, () => { inputRef.focus() }, { current: HTMLDivElement }}, ]
 
-export default function Movies({ user }) {
-  const [movies, setMovies] = useState([])
+export default function Movies() {
+  const [moviesPage, setMoviesPage] = useState()
+  const [offset, setOffset] = useState(0)
 
-  const moviesUrl = "https://api.nomoreparties.co"
+  const limit = 10
+  const countPages = moviesPage ? Math.ceil(moviesPage.count / limit) : 0
 
+  console.log(offset)
   useEffect(() => {
-    fetch("/api/movies")
+    fetch(`/api/movies?limit=${limit}&offset=${offset}`)
       .then(res => res.json())
-      .then(movies => setMovies(movies))
-  }, [])
+      .then(data => setMoviesPage(data))
+  }, [offset])
 
   return (
     <>
-      {movies.map(item => {
+      <div className="grid grid-cols-3">
+        {moviesPage?.results.map(movie => {
+          return (
+            <div key={movie.id}>
+              <img
+                style={{ width: 250, height: 150 }}
+                src={`https://api.nomoreparties.co${movie.imageUrl}`}
+                alt=""
+              />
+              <h2>{movie.nameRU}</h2>
+            </div>
+          )
+        })}
+      </div>
+
+      <Pagination
+        countPages={countPages}
+        offset={offset}
+        limit={limit}
+        setOffset={setOffset}
+      />
+    </>
+  )
+}
+
+const Pagination = props => {
+  return (
+    <>
+      {Array.from({ length: props.countPages }, (_, i) => {
         return (
-          <div key={item.id}>
-            <img
-              style={{ width: 250, height: 150 }}
-              src={`${moviesUrl}${item.imageUrl}`}
-              alt=""
-            />
-            <h2>{item.nameRU}</h2>
-          </div>
+          <button
+            style={{
+              fontWeight: i * props.limit === props.offset ? "bold" : undefined,
+            }}
+            key={i}
+            onClick={() => props.setOffset(i * props.limit)}
+          >
+            {i + 1}
+          </button>
         )
       })}
+      <button
+        disabled={props.offset === 0}
+        onClick={() => props.setOffset(props.offset - props.limit)}
+      >
+        Prev
+      </button>
+      <button
+        disabled={props.offset === (props.countPages - 1) * props.limit}
+        onClick={() => props.setOffset(props.offset + props.limit)}
+      >
+        Next
+      </button>
     </>
   )
 }

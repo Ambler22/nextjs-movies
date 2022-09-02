@@ -1,9 +1,21 @@
-import { PrismaClient } from "@prisma/client"
-
-const prisma = new PrismaClient()
+import prisma from "../../utils/db"
 
 export default async function handler(req, res) {
-  const { offset = 0, limit = 15 } = req.query
-  const movies = await prisma.movie.findMany({ take: limit, skip: offset })
-  res.status(200).send(movies)
+  let offset = Number(req.query.offset)
+  let limit = Number(req.query.limit)
+
+  if (Number.isNaN(offset) || offset < 0) {
+    offset = 0
+  }
+
+  if (Number.isNaN(limit) || limit < 0) {
+    limit = 50
+  }
+
+  const [movies, totalMoviesCount] = await Promise.all([
+    prisma.movie.findMany({ take: limit, skip: offset }),
+    prisma.movie.count(),
+  ])
+
+  res.status(200).send({ count: totalMoviesCount, results: movies })
 }

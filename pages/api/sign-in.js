@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client"
 import { ERROR_MESSAGES } from "../../utils/validation"
 import bcrypt from "bcryptjs"
 // import nookies from 'nookies'
@@ -6,23 +5,7 @@ import { serialize } from "cookie"
 import jwt from "jsonwebtoken"
 import { getRequiredServerEnvVar } from "../../utils/misc"
 import { TOKEN_COOKIE_NAME } from "../../utils/auth"
-
-const prisma = new PrismaClient({
-  log: [
-    {
-      emit: "event",
-      level: "query",
-    },
-    "info",
-    "warn",
-    "error",
-  ],
-})
-
-prisma.$on("query", e => {
-  console.log("Query: ", e.query)
-  console.log("Params: ", e.params)
-})
+import prisma from "../../utils/db"
 
 export default async function handler(req, res) {
   // req {

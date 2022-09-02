@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client"
 import {
   EMAIL_REGEX,
   PASSWORD_MIN_LENGTH,
@@ -6,8 +5,7 @@ import {
 } from "../../utils/validation"
 import bcrypt from "bcryptjs/dist/bcrypt"
 import { ERROR_MESSAGES } from "../../utils/validation"
-
-const prisma = new PrismaClient()
+import prisma from "../../utils/db"
 
 export default async function handler(req, res) {
   const { username, email, password } = req.body
