@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react"
+/* eslint-disable @next/next/no-img-element */
+import React, { useEffect, useState, useRef } from "react"
 import jwt from "jsonwebtoken"
 import { getRequiredServerEnvVar } from "../utils/misc"
 import { PrismaClient } from "@prisma/client"
@@ -6,43 +7,89 @@ import { TOKEN_COOKIE_NAME } from "../utils/auth"
 
 // [[{ name: 'django' }], true, () => { fetch() }, () => { inputRef.focus() }, { current: HTMLDivElement }}, ]
 
+//
+
 export default function Movies() {
-  const [moviesPage, setMoviesPage] = useState()
+  const [movies, setMovies] = useState([])
   const [offset, setOffset] = useState(0)
+  const [errorServer, setErrorServer] = useState("")
+  const hasNextPageRef = useRef(false)
 
-  const limit = 10
-  const countPages = moviesPage ? Math.ceil(moviesPage.count / limit) : 0
+  const limit = 21
+  // const countPages = moviesPages.length !== 0 ? Math.ceil(movesPage.count / limit) : 0
 
-  console.log(offset)
   useEffect(() => {
     fetch(`/api/movies?limit=${limit}&offset=${offset}`)
-      .then(res => res.json())
-      .then(data => setMoviesPage(data))
+      .then(res => {
+        return res.json().then(data => ({ res, data }))
+      })
+      .then(({ res, data }) => {
+        if (!res.ok) {
+          setErrorServer(data.message)
+        } else {
+          console.log(data)
+          const page = data
+          const newMovies = movies.concat(page.results)
+          setMovies(newMovies)
+          hasNextPageRef.current = newMovies.length < data.count
+        }
+      })
   }, [offset])
+
+  useEffect(() => {
+    function handleScroll() {
+      const MAC_OS_SPECIFIC_OFFSET_PX = 2
+      if (
+        window.innerHeight + window.scrollY >=
+          document.body.scrollHeight - MAC_OS_SPECIFIC_OFFSET_PX &&
+        hasNextPageRef.current
+      ) {
+        setOffset(prevOffset => prevOffset + limit)
+      }
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   return (
     <>
-      <div className="grid grid-cols-3">
-        {moviesPage?.results.map(movie => {
-          return (
-            <div key={movie.id}>
-              <img
-                style={{ width: 250, height: 150 }}
-                src={`https://api.nomoreparties.co${movie.imageUrl}`}
-                alt=""
-              />
-              <h2>{movie.nameRU}</h2>
-            </div>
-          )
-        })}
+      <div className="grid sm:grid-cols-3 gap-4">
+        {errorServer ? (
+          <h1>{errorServer}</h1>
+        ) : movies.length === 0 ? (
+          Array.from({ length: limit }, (_, i) => {
+            return (
+              <div className="w-[250px] h-[150px] bg-gray-500" key={i}></div>
+            )
+          })
+        ) : (
+          <>
+            {movies.map(movie => {
+              return (
+                <div key={movie.id}>
+                  <img
+                    width={250}
+                    height={150}
+                    style={{ width: 250, height: 150 }}
+                    src={`https://api.nomoreparties.co${movie.imageUrl}`}
+                    alt=""
+                  />
+                  <h2>{movie.nameRU}</h2>
+                </div>
+              )
+            })}
+            {}
+          </>
+        )}
       </div>
-
-      <Pagination
-        countPages={countPages}
-        offset={offset}
-        limit={limit}
-        setOffset={setOffset}
-      />
+      {/* {moviesPage !== null && (
+        <Pagination
+          countPages={countPages}
+          offset={offset}
+          limit={limit}
+          setOffset={setOffset}
+        />
+      )} */}
     </>
   )
 }

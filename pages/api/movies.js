@@ -17,5 +17,6 @@ export default async function handler(req, res) {
     prisma.movie.count(),
   ])
 
+  // res.status(403).send({ message: "No permissions" })
   res.status(200).send({ count: totalMoviesCount, results: movies })
 }

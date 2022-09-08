@@ -15,22 +15,20 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <header>
-        <nav>
+        <nav className="flex justify-center items-center gap-10 text-xl mb-5">
           <Link href="/">Главная</Link>
           {showAuthLinks &&
             (user ? (
               <>
-                <div>
-                  <Link href="/movies">Фильмы</Link>
-                  <Link href="/saved-movies">Сохраненные фильмы</Link>
-                </div>
+                <Link href="/movies">Фильмы</Link>
+                <Link href="/saved-movies">Сохраненные фильмы</Link>
                 <Link href="/profile">{user.email}</Link>
               </>
             ) : (
-              <div>
+              <>
                 <Link href="/sign-up">Регистрация</Link>
                 <Link href="/sign-in">Войти</Link>
-              </div>
+              </>
             ))}
         </nav>
       </header>
